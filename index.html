@@ -1,0 +1,551 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Mise au vert CODIR PAM · Mai 2025</title>
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800&family=Open+Sans:wght@300;400;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --navy:       #0D2B4E;
+    --navy-mid:   #1A3F6F;
+    --blue:       #2E9BD6;
+    --blue-light: #D6EEF9;
+    --blue-pale:  #EBF6FC;
+    --purple:     #3D3A8C;
+    --purple-lt:  #ECEAFB;
+    --amber:      #C47A0A;
+    --amber-lt:   #FEF3DC;
+    --green:      #0F6E56;
+    --green-lt:   #D8F2EB;
+    --grey:       #F4F6F9;
+    --border:     #DDE3EB;
+    --text:       #1A2B3C;
+    --muted:      #6B7A8D;
+    --white:      #FFFFFF;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { overflow: hidden; font-family: 'Open Sans', sans-serif; color: var(--text); background: var(--grey); line-height: 1.6; font-size: 14px; }
+
+  header { background: #0D2B4E; color: white; position: relative; overflow: hidden; }
+  .header-dots { position: absolute; top:0; right:0; bottom:0; left:0; background-image: radial-gradient(circle, rgba(46,155,214,0.15) 1px, transparent 1px); background-size: 28px 28px; pointer-events: none; }
+  .header-wave { position: absolute; bottom:0; left:0; right:0; height:70px; background: var(--grey); clip-path: ellipse(55% 100% at 50% 100%); }
+  .header-inner { max-width: 900px; margin: 0 auto; padding: 36px 24px 72px; position: relative; }
+
+  .header-tag { font-family: 'Montserrat', sans-serif; font-size: 10px; font-weight: 700; letter-spacing: .16em; text-transform: uppercase; color: var(--blue); margin-bottom: 12px; }
+  header h1 { font-family: 'Montserrat', sans-serif; font-size: clamp(22px,4.5vw,36px); font-weight: 800; text-transform: uppercase; letter-spacing: .04em; line-height: 1.15; color: white; margin-bottom: 16px; }
+  header h1 span { color: var(--blue); }
+  .header-pills { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 18px; }
+  .pill { background: rgba(255,255,255,.1); border: 1px solid rgba(255,255,255,.2); border-radius: 20px; padding: 5px 14px; font-size: 12px; color: rgba(255,255,255,.8); }
+
+  nav { background: var(--navy); position: sticky; top: 0; z-index: 100; box-shadow: 0 2px 12px rgba(13,43,78,.35); }
+  .nav-inner { max-width: 900px; margin: 0 auto; display: flex; overflow-x: auto; scrollbar-width: none; }
+  .nav-inner::-webkit-scrollbar { display: none; }
+  .nav-btn { padding: 15px 18px; font-family: 'Montserrat', sans-serif; font-size: 11px; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; color: rgba(255,255,255,.4); background: none; border: none; border-bottom: 3px solid transparent; cursor: pointer; white-space: nowrap; transition: color .2s, border-color .2s; }
+  .nav-btn:hover { color: rgba(255,255,255,.8); }
+  .nav-btn.active { color: var(--blue); border-bottom-color: var(--blue); }
+
+  main { max-width: 900px; margin: 0 auto; padding: 36px 20px 80px; }
+  .section { display: none; }
+  .section.active { display: block; }
+  .section-title { font-family: 'Montserrat', sans-serif; font-size: 12px; font-weight: 800; text-transform: uppercase; letter-spacing: .12em; color: var(--navy); margin-bottom: 20px; padding-bottom: 10px; border-bottom: 2px solid var(--blue); display: flex; align-items: center; gap: 10px; }
+  .section-title::before { content:''; display:block; width:4px; height:18px; background:var(--blue); border-radius:2px; }
+
+  .day-label { font-family: 'Montserrat', sans-serif; font-size: 10px; font-weight: 800; letter-spacing: .14em; text-transform: uppercase; color: white; background: var(--navy-mid); display: inline-block; padding: 4px 14px; border-radius: 4px; margin: 22px 0 10px; }
+  .day-label:first-of-type { margin-top: 0; }
+  .slot { display: flex; gap: 14px; align-items: stretch; margin-bottom: 6px; }
+  .slot-time { font-size: 11px; color: var(--muted); min-width: 94px; padding-top: 13px; flex-shrink: 0; white-space: nowrap; font-family: 'Montserrat', sans-serif; font-weight: 600; }
+  .slot-card { flex:1; background: var(--white); border: 1px solid var(--border); border-radius: 8px; padding: 11px 16px; border-left: 4px solid transparent; }
+  .slot-card.cb { border-left-color: var(--blue); }
+  .slot-card.cp { border-left-color: var(--purple); }
+  .slot-card.ca { border-left-color: var(--amber); }
+  .slot-card.cg { border-left-color: var(--green); background: #f2faf7; border-color: #c0ddd6; }
+  .slot-card.cx { background: var(--grey); border-color: var(--border); border-left-color: var(--border); }
+  .slot-title { font-family: 'Montserrat', sans-serif; font-size: 13px; font-weight: 700; }
+  .tb { color: var(--navy); } .tp { color: var(--purple); } .ta { color: var(--amber); } .tg { color: var(--green); } .tx { color: var(--muted); font-weight: 400; font-size: 13px; }
+  .slot-sub { font-size: 12px; color: var(--muted); margin-top: 2px; }
+
+  .bloc-card { background: var(--white); border: 1px solid var(--border); border-radius: 10px; margin-bottom: 14px; overflow: hidden; }
+  .bloc-hd { padding: 13px 18px; display: flex; justify-content: space-between; align-items: center; gap: 12px; }
+  .bloc-hd.cb { background: var(--blue-pale); border-bottom: 1px solid #C5E4F5; }
+  .bloc-hd.cp { background: var(--purple-lt); border-bottom: 1px solid #D0CDEF; }
+  .bloc-hd.ca { background: var(--amber-lt); border-bottom: 1px solid #F0D89A; }
+  .bloc-hd-name { font-family: 'Montserrat', sans-serif; font-size: 13px; font-weight: 700; }
+  .bloc-hd-time { font-size: 11px; font-weight: 600; font-family: 'Montserrat', sans-serif; white-space: nowrap; opacity: .65; }
+  .bloc-body { padding: 16px 18px; }
+  .lbl { font-family: 'Montserrat', sans-serif; font-size: 9px; font-weight: 800; letter-spacing: .14em; text-transform: uppercase; color: var(--muted); margin: 14px 0 5px; }
+  .lbl:first-child { margin-top: 0; }
+  .bloc-text { font-size: 13px; color: var(--text); line-height: 1.65; }
+  .out-box { border-radius: 6px; padding: 10px 14px; font-size: 13px; font-weight: 600; margin-top: 4px; }
+  .ob { background: var(--blue-pale); color: var(--navy); }
+  .op { background: var(--purple-lt); color: var(--purple); }
+  .oa { background: var(--amber-lt); color: var(--amber); }
+  .prep-box { background: var(--amber-lt); border-left: 3px solid var(--amber); border-radius: 0 6px 6px 0; padding: 10px 14px; font-size: 13px; color: var(--amber); margin-top: 4px; }
+
+  .deadline-chip { display: inline-flex; align-items: center; gap: 5px; font-size: 11px; font-family: 'Montserrat', sans-serif; font-weight: 700; color: var(--amber); background: var(--amber-lt); border: 1px solid #F0D89A; padding: 4px 10px; border-radius: 20px; margin-bottom: 18px; }
+  .prep-table-wrap { overflow-x: auto; border-radius: 10px; border: 1px solid var(--border); }
+  table.pt { width: 100%; border-collapse: collapse; background: var(--white); font-size: 13px; }
+  table.pt thead tr { background: var(--navy); color: white; }
+  table.pt thead th { font-family: 'Montserrat', sans-serif; font-size: 10px; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; padding: 13px 16px; text-align: left; white-space: nowrap; }
+  table.pt tbody td { padding: 12px 16px; border-bottom: 1px solid var(--border); vertical-align: top; line-height: 1.55; }
+  table.pt tbody tr:last-child td { border-bottom: none; }
+  table.pt tbody tr:nth-child(even) td { background: var(--grey); }
+  .pname { font-family: 'Montserrat', sans-serif; font-weight: 700; font-size: 13px; color: var(--navy); }
+  .bbadge { display: inline-block; font-family: 'Montserrat', sans-serif; font-size: 10px; font-weight: 700; padding: 3px 8px; border-radius: 4px; }
+  .bbadge.b { background: var(--blue-pale); color: var(--navy); }
+  .bbadge.p { background: var(--purple-lt); color: var(--purple); }
+  .bbadge.a { background: var(--amber-lt); color: var(--amber); }
+  .all-box { background: var(--blue-pale); border-left: 4px solid var(--blue); border-radius: 0 8px 8px 0; padding: 14px 18px; margin-top: 18px; font-size: 13px; color: var(--navy); }
+  .all-box strong { font-family: 'Montserrat', sans-serif; font-weight: 700; display: block; margin-bottom: 4px; }
+
+  .info-placeholder { background: var(--white); border: 2px dashed var(--border); border-radius: 10px; padding: 32px; text-align: center; color: var(--muted); font-size: 14px; margin-bottom: 12px; }
+  .info-card { background: var(--white); border: 1px solid var(--border); border-radius: 10px; padding: 16px 20px; margin-bottom: 10px; border-left: 4px solid var(--green); }
+  .info-card-title { font-family: 'Montserrat', sans-serif; font-size: 12px; font-weight: 700; color: var(--green); text-transform: uppercase; letter-spacing: .08em; margin-bottom: 6px; }
+
+  .form-intro { background: var(--blue-pale); border-left: 4px solid var(--blue); border-radius: 0 8px 8px 0; padding: 14px 18px; font-size: 13px; color: var(--navy); margin-bottom: 24px; line-height: 1.65; }
+  .form-sec { font-family: 'Montserrat', sans-serif; font-size: 11px; font-weight: 800; letter-spacing: .1em; text-transform: uppercase; color: var(--navy); background: var(--grey); padding: 8px 14px; border-radius: 6px; margin: 20px 0 14px; border-left: 3px solid var(--blue); }
+  label { display: block; font-size: 12px; color: var(--muted); margin-bottom: 5px; font-weight: 600; }
+  input[type="text"], select, textarea { width: 100%; font-family: 'Open Sans', sans-serif; font-size: 16px; padding: 10px 14px; border: 1.5px solid var(--border); border-radius: 8px; background: white; color: var(--text); transition: border-color .2s, box-shadow .2s; margin-bottom: 14px; outline: none; }
+  input:focus, select:focus, textarea:focus { border-color: var(--blue); box-shadow: 0 0 0 3px rgba(46,155,214,.12); }
+  textarea { min-height: 80px; resize: vertical; }
+  .submit-btn { background: var(--navy); color: white; font-family: 'Montserrat', sans-serif; font-size: 12px; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; padding: 13px 32px; border: none; border-radius: 8px; cursor: pointer; transition: background .2s; }
+  .submit-btn:hover { background: var(--navy-mid); }
+  .success-msg { display: none; background: var(--green-lt); border: 1px solid #a8d5c8; border-radius: 8px; padding: 16px 20px; color: var(--green); font-size: 13px; font-weight: 600; margin-top: 14px; }
+  .responses-wrap { margin-top: 32px; }
+  .responses-wrap h3 { font-family: 'Montserrat', sans-serif; font-size: 11px; font-weight: 800; text-transform: uppercase; letter-spacing: .1em; color: var(--navy); margin-bottom: 12px; }
+  .rt { width: 100%; border-collapse: collapse; font-size: 12px; border-radius: 8px; overflow: hidden; border: 1px solid var(--border); }
+  .rt th { background: var(--navy); color: white; font-family: 'Montserrat', sans-serif; font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: .08em; padding: 10px 12px; text-align: left; }
+  .rt td { padding: 10px 12px; border-bottom: 1px solid var(--border); vertical-align: top; }
+  .rt tr:last-child td { border-bottom: none; }
+  .rt tr:nth-child(even) td { background: var(--grey); }
+  .nodata { text-align: center; color: var(--muted); padding: 28px; font-size: 13px; }
+
+  .atelier-card { background: var(--white); border: 1px solid var(--border); border-radius: 10px; margin-bottom: 20px; overflow: hidden; }
+  .atelier-hd { padding: 13px 18px; font-family: 'Montserrat', sans-serif; font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: .08em; }
+  .atelier-hd.b { background: var(--blue-pale); color: var(--navy); }
+  .atelier-hd.a { background: var(--amber-lt); color: var(--amber); }
+  .atelier-body { padding: 18px; }
+  .atelier-intro { font-size: 13px; color: var(--muted); margin-bottom: 14px; }
+  .irow { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 4px; }
+  .irow input, .irow select { margin-bottom: 0; flex: 1; min-width: 120px; }
+  .add-btn { background: var(--navy); color: white; border: none; border-radius: 8px; padding: 10px 18px; font-family: 'Montserrat', sans-serif; font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: .06em; cursor: pointer; white-space: nowrap; transition: background .2s; flex-shrink: 0; }
+  .add-btn:hover { background: var(--navy-mid); }
+  .add-btn.a { background: var(--amber); }
+  .add-btn.a:hover { background: #9a600a; }
+  .pcols { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-top: 18px; }
+  .pcol-title { font-family: 'Montserrat', sans-serif; font-size: 10px; font-weight: 800; text-transform: uppercase; letter-spacing: .1em; color: var(--muted); margin-bottom: 8px; }
+  .pi { border-radius: 6px; padding: 9px 12px; font-size: 13px; margin-bottom: 6px; display: flex; justify-content: space-between; align-items: flex-start; gap: 8px; }
+  .pi.bien { background: #EEFAF4; border: 1px solid #9DD3BC; }
+  .pi.amelio { background: #FFF8EE; border: 1px solid #F0C97A; }
+  .pi-author { font-size: 11px; color: var(--muted); white-space: nowrap; font-weight: 600; }
+  .vwrap { background: var(--grey); border: 1px solid var(--border); border-radius: 8px; padding: 16px; margin-top: 14px; }
+  .vr { margin-bottom: 12px; }
+  .vr-label { font-size: 13px; color: var(--text); margin-bottom: 5px; display: flex; justify-content: space-between; font-weight: 600; }
+  .vbar-bg { background: white; border-radius: 4px; height: 8px; overflow: hidden; border: 1px solid var(--border); }
+  .vbar { height: 8px; border-radius: 4px; background: var(--blue); transition: width .4s ease; }
+  .vtotal { font-size: 11px; color: var(--muted); margin-top: 14px; font-style: italic; }
+  .nodata-sm { font-size: 13px; color: var(--muted); text-align: center; padding: 20px; }
+
+  footer { background: var(--navy); color: rgba(255,255,255,.35); text-align: center; padding: 20px; font-size: 11px; font-family: 'Montserrat', sans-serif; font-weight: 500; letter-spacing: .08em; }
+
+  /* ── LOGIN OVERLAY ── */
+  #splash {
+    position: fixed; inset: 0; z-index: 9999;
+    background: url('bg-splash.png') center center / cover no-repeat;
+    display: flex; align-items: center; justify-content: center;
+    flex-direction: column;
+  }
+  #splash::before {
+    content: '';
+    position: absolute; inset: 0;
+    background: rgba(8, 25, 48, 0.45);
+  }
+  .splash-box {
+    position: relative;
+    background: rgba(255,255,255,0.08);
+    backdrop-filter: blur(18px);
+    -webkit-backdrop-filter: blur(18px);
+    border: 1px solid rgba(255,255,255,0.2);
+    border-radius: 16px;
+    padding: 48px 56px;
+    width: 100%; max-width: 400px;
+    text-align: center;
+    box-shadow: 0 24px 64px rgba(0,0,0,0.4);
+  }
+  .splash-title {
+    font-family: 'Montserrat', sans-serif;
+    font-size: 11px; font-weight: 700;
+    letter-spacing: .18em; text-transform: uppercase;
+    color: rgba(255,255,255,0.6);
+    margin-bottom: 10px;
+  }
+  .splash-heading {
+    font-family: 'Montserrat', sans-serif;
+    font-size: 22px; font-weight: 800;
+    text-transform: uppercase; letter-spacing: .06em;
+    color: white; margin-bottom: 32px; line-height: 1.2;
+  }
+  .splash-heading span { color: #2E9BD6; }
+  .splash-input {
+    width: 100%; padding: 13px 18px;
+    border: 1.5px solid rgba(255,255,255,0.25);
+    border-radius: 10px;
+    background: rgba(255,255,255,0.1);
+    color: white; font-family: 'Open Sans', sans-serif;
+    font-size: 14px; outline: none;
+    text-align: center; letter-spacing: .1em;
+    transition: border-color .2s, background .2s;
+    margin-bottom: 14px;
+  }
+  .splash-input::placeholder { color: rgba(255,255,255,0.35); letter-spacing: .05em; }
+  .splash-input:focus { border-color: #2E9BD6; background: rgba(255,255,255,0.15); }
+  .splash-btn {
+    width: 100%; padding: 13px;
+    background: #2E9BD6; color: white;
+    font-family: 'Montserrat', sans-serif;
+    font-size: 12px; font-weight: 700;
+    letter-spacing: .1em; text-transform: uppercase;
+    border: none; border-radius: 10px; cursor: pointer;
+    transition: background .2s;
+  }
+  .splash-btn:hover { background: #2480b0; }
+  .splash-error {
+    color: #ff6b6b; font-size: 12px; margin-top: 10px;
+    display: none; font-weight: 600;
+  }
+  .splash-tagline {
+    position: absolute; bottom: 32px; left: 32px;
+    color: white; font-family: 'Open Sans', sans-serif; font-size: 13px;
+  }
+  .splash-tagline span { color: #2E9BD6; font-weight: 600; }
+
+  @media(max-width:600px){ .pcols{grid-template-columns:1fr;} .slot-time{min-width:70px;font-size:10px;} .header-inner{padding:28px 16px 60px;} }
+</style>
+</head>
+<body>
+
+
+<!-- SPLASH LOGIN -->
+<div id="splash">
+  <div class="splash-box">
+    <div class="splash-title">Saint-Gobain PAM · Confidentiel</div>
+    <div class="splash-heading">Mise au vert<br><span>CODIR PAM</span></div>
+    <div style="position:relative;margin-bottom:14px;">
+      <input class="splash-input" type="password" id="splash-pwd" placeholder="Mot de passe" onkeydown="if(event.key==='Enter')checkSplash()" style="margin-bottom:0;padding-right:48px;">
+      <button onclick="togglePwd()" style="position:absolute;right:14px;top:50%;transform:translateY(-50%);background:none;border:none;cursor:pointer;color:rgba(255,255,255,0.6);font-size:18px;padding:4px;line-height:1;" id="eye-btn">👁</button>
+    </div>
+    <button class="splash-btn" onclick="checkSplash()">Accéder</button>
+    <div class="splash-error" id="splash-error">Mot de passe incorrect.</div>
+  </div>
+  <div class="splash-tagline">Parce que l'<span>eau</span> est précieuse</div>
+</div>
+
+<header>
+  <div class="header-dots"></div>
+  <div class="header-inner">
+    <!-- Remplacer src par le chemin vers le fichier logo PAM officiel -->
+    <img src="logo-pam.png" alt="PAM Saint-Gobain" style="height:90px; margin-bottom:24px; display:block;">
+    <div class="header-tag">Document interne confidentiel</div>
+    <h1>Mise au vert<br><span>CODIR PAM</span></h1>
+    <div class="header-pills">
+      <div class="pill">📅 28 & 29 mai 2025</div>
+      <div class="pill">📍 [Lieu à compléter]</div>
+      <div class="pill">👥 CODIR PAM</div>
+    </div>
+  </div>
+  <div class="header-wave"></div>
+</header>
+
+<nav>
+  <div class="nav-inner">
+    <button class="nav-btn active" onclick="show('programme',this)">Programme</button>
+    <button class="nav-btn" onclick="show('blocs',this)">Blocs</button>
+    <button class="nav-btn" onclick="show('preparations',this)">Préparations</button>
+    <button class="nav-btn" onclick="show('infos',this)">Infos pratiques</button>
+    <button class="nav-btn" onclick="show('formulaire',this)">Formulaire J-2</button>
+    <button class="nav-btn" onclick="show('ateliers',this)">Outils séance</button>
+  </div>
+</nav>
+
+<main>
+
+<!-- PROGRAMME -->
+<div id="programme" class="section active">
+  <h2 class="section-title">Programme</h2>
+  <div class="day-label">Jeudi 28 mai</div>
+  <div class="slot"><div class="slot-time">13h30 – 14h30</div><div class="slot-card cb"><div class="slot-title tb">Bloc 1a — Déploiement Lead & Grow</div><div class="slot-sub">1h · Tour de table · Pas de slides</div></div></div>
+  <div class="slot"><div class="slot-time">14h30 – 15h30</div><div class="slot-card cb"><div class="slot-title tb">Bloc 1b — Fonctionnement CODIR & désilotage</div><div class="slot-sub">1h · Format atelier</div></div></div>
+  <div class="slot"><div class="slot-time">15h30 – 15h45</div><div class="slot-card cx"><div class="slot-title tx">Pause</div></div></div>
+  <div class="slot"><div class="slot-time">15h45 – 16h45</div><div class="slot-card cp"><div class="slot-title tp">Bloc 2a — Alignement SMAPS / objectifs globaux</div><div class="slot-sub">1h · Revue tableau comparatif</div></div></div>
+  <div class="slot"><div class="slot-time">16h45 – 17h45</div><div class="slot-card cp"><div class="slot-title tp">Bloc 2b — Fondamentaux — Service & Qualité</div><div class="slot-sub">1h · Sous-groupes + restitution</div></div></div>
+  <div class="slot"><div class="slot-time">17h45 – 18h30</div><div class="slot-card ca"><div class="slot-title ta">Bloc 3 — Déploiement Control+</div><div class="slot-sub">45 min · Présentation + discussion</div></div></div>
+  <div class="slot"><div class="slot-time">20h00</div><div class="slot-card cx"><div class="slot-title tx">Dîner</div></div></div>
+  <div class="day-label">Vendredi 29 mai</div>
+  <div class="slot"><div class="slot-time">08h30 – 11h30</div><div class="slot-card cg"><div class="slot-title tg">🏗 Visite de chantier — départ hôtel</div><div class="slot-sub">3h</div></div></div>
+  <div class="slot"><div class="slot-time">11h30 – 13h00</div><div class="slot-card cx"><div class="slot-title tx">Déjeuner</div></div></div>
+  <div class="slot"><div class="slot-time">13h00 – 13h45</div><div class="slot-card ca"><div class="slot-title ta">Bloc 4 — Plan antiplastique & pilotage</div><div class="slot-sub">45 min</div></div></div>
+  <div class="slot"><div class="slot-time">13h45 – 14h30</div><div class="slot-card cb"><div class="slot-title tb">Bloc 5 — Trames budgétaires</div><div class="slot-sub">45 min · Cadrage méthodologique</div></div></div>
+  <div class="slot"><div class="slot-time">14h30 – 15h00</div><div class="slot-card cp"><div class="slot-title tp">Clôture — Décisions actées & suite</div><div class="slot-sub">30 min</div></div></div>
+  <div class="slot"><div class="slot-time">15h00</div><div class="slot-card cx"><div class="slot-title tx">Départ</div></div></div>
+</div>
+
+<!-- BLOCS -->
+<div id="blocs" class="section">
+  <h2 class="section-title">Contenu des blocs</h2>
+
+  <div class="bloc-card">
+    <div class="bloc-hd cb"><span class="bloc-hd-name tb">Bloc 1a — Déploiement Lead & Grow</span><span class="bloc-hd-time tb">Jeudi 13h30 · 1h</span></div>
+    <div class="bloc-body">
+      <div class="lbl">Enjeu</div><div class="bloc-text">Lead & Grow est lancé depuis plus de 6 mois. Ce bloc vise à partager les avancées, consolider les apprentissages du déploiement opérationnel et prendre les décisions de gouvernance qui permettront d'accélérer.</div>
+      <div class="lbl">Format</div><div class="bloc-text">Tour de table structuré — pas de slides. Chaque membre partage ce qui avance et ce qui mérite attention. Consolidation collective, puis décisions de gouvernance.</div>
+      <div class="lbl">Output</div><div class="out-box ob">Liste de décisions de gouvernance LG — propriétaires et délais.</div>
+      <div class="lbl">Préparation</div><div class="prep-box">Chaque membre — 3 lignes via le formulaire J-2.</div>
+    </div>
+  </div>
+
+  <div class="bloc-card">
+    <div class="bloc-hd cb"><span class="bloc-hd-name tb">Bloc 1b — Fonctionnement CODIR & désilotage</span><span class="bloc-hd-time tb">Jeudi 14h30 · 1h</span></div>
+    <div class="bloc-body">
+      <div class="lbl">Enjeu</div><div class="bloc-text">La qualité du fonctionnement collectif est un accélérateur. Ce bloc vise à renforcer la collaboration, améliorer la circulation de l'information et consolider des modes de fonctionnement partagés.</div>
+      <div class="lbl">Format</div><div class="bloc-text">Ce qui fonctionne bien / ce qu'on veut améliorer. Mise en commun, regroupement par thèmes, puis engagements collectifs concrets.</div>
+      <div class="lbl">Output</div><div class="out-box ob">2 ou 3 engagements + ajustements des règles de fonctionnement CODIR.</div>
+      <div class="lbl">Préparation</div><div class="prep-box">Chaque membre — 3 lignes via le formulaire J-2.</div>
+    </div>
+  </div>
+
+  <div class="bloc-card">
+    <div class="bloc-hd cp"><span class="bloc-hd-name tp">Bloc 2a — Alignement SMAPS / objectifs globaux</span><span class="bloc-hd-time tp">Jeudi 15h45 · 1h</span></div>
+    <div class="bloc-body">
+      <div class="lbl">Enjeu</div><div class="bloc-text">Les SMAPS existent et sont partagés. Ce bloc vise à vérifier la cohérence avec les objectifs globaux et prendre les ajustements nécessaires.</div>
+      <div class="lbl">Format</div><div class="bloc-text">Revue sur la base d'un tableau comparatif préparé en amont (objectif global / SMAPS / écart). On s'arrête uniquement sur les écarts critiques.</div>
+      <div class="lbl">Output</div><div class="out-box op">Validation ou réajustement des objectifs par pays. Points de vigilance identifiés.</div>
+      <div class="lbl">Préparation</div><div class="prep-box">Responsable : Rebecca — Tableau comparatif SMAPS / objectifs par pays.</div>
+    </div>
+  </div>
+
+  <div class="bloc-card">
+    <div class="bloc-hd cp"><span class="bloc-hd-name tp">Bloc 2b — Fondamentaux — Service & Qualité</span><span class="bloc-hd-time tp">Jeudi 16h45 · 1h</span></div>
+    <div class="bloc-body">
+      <div class="lbl">Enjeu</div><div class="bloc-text">Le service et la qualité sont les fondamentaux de la proposition de valeur PAM. Ce bloc vise à partager une lecture commune des performances par pays et à construire une roadmap d'amélioration concertée.</div>
+      <div class="lbl">Format</div><div class="bloc-text">Présentation rapide des données par pays. Travail en sous-groupes par thème (qualité produit / délais / réclamations). Restitution collective.</div>
+      <div class="lbl">Output</div><div class="out-box op">Diagnostic partagé + roadmap avec 4 à 6 actions prioritaires, propriétaires et délais.</div>
+      <div class="lbl">Préparation</div><div class="prep-box">Responsables : Hervé, Augusto — Synthèse données service & qualité par pays.</div>
+    </div>
+  </div>
+
+  <div class="bloc-card">
+    <div class="bloc-hd ca"><span class="bloc-hd-name ta">Bloc 3 — Déploiement Control+</span><span class="bloc-hd-time ta">Jeudi 17h45 · 45 min</span></div>
+    <div class="bloc-body">
+      <div class="lbl">Enjeu</div><div class="bloc-text">Point d'étape sur le déploiement de Control+. Accélérer la dynamique sur les marchés en progression en s'appuyant sur les bonnes pratiques des pays les plus avancés.</div>
+      <div class="lbl">Format</div><div class="bloc-text">Présentation des données de pénétration par pays + partage des success stories internes. Discussion collective sur les leviers d'accélération.</div>
+      <div class="lbl">Output</div><div class="out-box oa">Roadmap / engagements sur pays clés.</div>
+      <div class="lbl">Préparation</div><div class="prep-box">Responsables : Raphaël, Arnaud — Pénétration Control+ par pays + 2 success stories internes.</div>
+    </div>
+  </div>
+
+  <div class="bloc-card">
+    <div class="bloc-hd ca"><span class="bloc-hd-name ta">Bloc 4 — Plan antiplastique & pilotage</span><span class="bloc-hd-time ta">Vendredi 13h00 · 45 min</span></div>
+    <div class="bloc-body">
+      <div class="lbl">Enjeu</div><div class="bloc-text">La hausse des prix plastiques renforce la compétitivité de PAM. Ce bloc vise à aligner le CODIR sur l'argumentaire actualisé et à construire un plan d'action commercial coordonné par pays.</div>
+      <div class="lbl">Format</div><div class="bloc-text">Présentation de la comparaison compétitivité fonte / plastique. Chaque directeur pays propose une initiative. Définition collective des indicateurs de pilotage.</div>
+      <div class="lbl">Output</div><div class="out-box oa">Argumentaire + feuille de route par pays.</div>
+      <div class="lbl">Préparation</div><div class="prep-box">Responsables : Pauline, Arnaud, Raphaël — Compétitivité fonte / plastique avec données marché récentes.</div>
+    </div>
+  </div>
+
+  <div class="bloc-card">
+    <div class="bloc-hd cb"><span class="bloc-hd-name tb">Bloc 5 — Trames budgétaires — cadrage méthodologique</span><span class="bloc-hd-time tb">Vendredi 13h45 · 45 min</span></div>
+    <div class="bloc-body">
+      <div class="lbl">Enjeu</div><div class="bloc-text">Aligner le CODIR sur les orientations des futures trames budgétaires — quels axes, quels indicateurs, quel niveau de granularité.</div>
+      <div class="lbl">Format</div><div class="bloc-text">Présentation des besoins identifiés et des axes d'évolution proposés. Discussion collective sur les principes directeurs. Décision sur le calendrier.</div>
+      <div class="lbl">Output</div><div class="out-box ob">Orientations méthodologiques validées + calendrier de conception acté.</div>
+      <div class="lbl">Préparation</div><div class="prep-box">Responsable : Gerald — Synthèse des retours terrain + proposition d'axes d'évolution.</div>
+    </div>
+  </div>
+</div>
+
+<!-- PRÉPARATIONS -->
+<div id="preparations" class="section">
+  <h2 class="section-title">Préparations assignées</h2>
+  <div class="deadline-chip">⏰ Date limite : lundi 26 mai (J-2)</div>
+  <div class="prep-table-wrap">
+    <table class="pt">
+      <thead>
+        <tr><th>Responsable(s)</th><th>Bloc</th><th>Livrable attendu</th><th>Format</th></tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><span class="pname">Rebecca</span></td>
+          <td><span class="bbadge p">Bloc 2a</span></td>
+          <td>Tableau comparatif SMAPS / objectifs par pays</td>
+          <td>Tableau vert / orange / rouge — à envoyer J-2</td>
+        </tr>
+        <tr>
+          <td><span class="pname">Hervé, Augusto</span></td>
+          <td><span class="bbadge p">Bloc 2b</span></td>
+          <td>Synthèse données service & qualité par pays</td>
+          <td>1 slide max par pays — à envoyer J-2</td>
+        </tr>
+        <tr>
+          <td><span class="pname">Raphaël, Arnaud</span></td>
+          <td><span class="bbadge a">Bloc 3</span></td>
+          <td>Tableau de pénétration Control+ par pays + 2 success stories internes</td>
+          <td>Présentation courte — à envoyer J-2</td>
+        </tr>
+        <tr>
+          <td><span class="pname">Pauline, Arnaud, Raphaël</span></td>
+          <td><span class="bbadge a">Bloc 4</span></td>
+          <td>Comparaison compétitivité fonte / plastique avec données marché récentes</td>
+          <td>Données + argumentaire — à envoyer J-2</td>
+        </tr>
+        <tr>
+          <td><span class="pname">Gerald</span></td>
+          <td><span class="bbadge b">Bloc 5</span></td>
+          <td>Synthèse des retours terrain + proposition d'axes d'évolution des trames budgétaires</td>
+          <td>Note courte — à envoyer J-2</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="all-box">
+    <strong>Tous les membres du CODIR</strong>
+    Remplir le formulaire de préparation J-2 (onglet « Formulaire J-2 ») avant le lundi 26 mai. 3 lignes sur Lead & Grow et le fonctionnement CODIR. Indispensable pour préparer l'animation des blocs 1a et 1b.
+  </div>
+</div>
+
+<!-- INFOS PRATIQUES -->
+<div id="infos" class="section">
+  <h2 class="section-title">Infos pratiques</h2>
+  <div class="info-placeholder">📍 Hôtel & lieu — à compléter</div>
+  <div class="info-placeholder">🚗 Trajets & accès — à compléter</div>
+  <div class="info-placeholder">📞 Contact organisateur — à compléter</div>
+  <div class="info-card">
+    <div class="info-card-title">🏗 Visite de chantier — Vendredi 08h30</div>
+    <div style="font-size:13px;color:var(--muted)">Tenue de sécurité obligatoire : chaussures de sécurité, casque. Prévoir des vêtements adaptés. Départ depuis l'hôtel à 08h30 précises.</div>
+  </div>
+</div>
+
+<!-- FORMULAIRE J-2 -->
+<div id="formulaire" class="section">
+  <h2 class="section-title">Formulaire de préparation — J-2</h2>
+  <div class="form-intro">À remplir avant le <strong>lundi 26 mai</strong>. Vos réponses permettront d'adapter l'animation des blocs 1a et 1b et d'arriver avec un diagnostic partagé dès l'ouverture.</div>
+  <form id="prepForm" onsubmit="submitPrep(event)">
+    <label>Votre nom *</label>
+    <input type="text" id="prep-nom" placeholder="Prénom Nom" required>
+    <div class="form-sec">Bloc 1a — Déploiement Lead & Grow</div>
+    <label>Sur votre périmètre, qu'est-ce qui avance bien ?</label>
+    <textarea id="prep-avance" placeholder="2-3 lignes…"></textarea>
+    <label>Qu'est-ce qui mérite attention ou freine le déploiement ?</label>
+    <textarea id="prep-freine" placeholder="2-3 lignes…"></textarea>
+    <label>De quoi avez-vous besoin pour accélérer ?</label>
+    <textarea id="prep-besoin" placeholder="2-3 lignes…"></textarea>
+    <div class="form-sec">Bloc 1b — Fonctionnement CODIR</div>
+    <label>Dans notre façon de travailler ensemble, ce qui fonctionne bien :</label>
+    <textarea id="prep-fonctionne" placeholder="1-2 lignes…"></textarea>
+    <label>Ce qu'on gagnerait à améliorer collectivement :</label>
+    <textarea id="prep-ameliorer" placeholder="1-2 lignes…"></textarea>
+    <button type="submit" class="submit-btn">Envoyer ma préparation</button>
+  </form>
+  <div class="success-msg" id="prep-success">✅ Préparation bien enregistrée. Merci !</div>
+  <div class="responses-wrap" id="prep-responses-wrap" style="display:none">
+    <h3>Réponses reçues</h3>
+    <div style="overflow-x:auto">
+      <table class="rt">
+        <thead><tr><th>Nom</th><th>Ce qui avance</th><th>Ce qui freine</th><th>Besoin</th><th>Fonctionne</th><th>À améliorer</th></tr></thead>
+        <tbody id="prep-tbody"><tr><td colspan="6" class="nodata">Aucune réponse pour l'instant.</td></tr></tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<!-- OUTILS SÉANCE -->
+<div id="ateliers" class="section">
+  <h2 class="section-title">Outils pour la séance</h2>
+
+  <div class="atelier-card">
+    <div class="atelier-hd b">Bloc 1b — Post-its fonctionnement CODIR</div>
+    <div class="atelier-body">
+      <p class="atelier-intro">Chacun ajoute ses contributions. Elles apparaissent en temps réel.</p>
+      <div class="irow">
+        <input type="text" id="postit-nom" placeholder="Votre nom" style="max-width:150px">
+        <input type="text" id="postit-text" placeholder="Votre contribution…" onkeydown="if(event.key==='Enter'){addPostit();}">
+        <select id="postit-type"><option value="bien">✅ Ce qui fonctionne</option><option value="amelio">🔧 À améliorer</option></select>
+        <button class="add-btn" onclick="addPostit()">Ajouter</button>
+      </div>
+      <div class="pcols">
+        <div><div class="pcol-title">✅ Ce qui fonctionne</div><div id="postits-bien"></div></div>
+        <div><div class="pcol-title">🔧 À améliorer</div><div id="postits-amelio"></div></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="atelier-card">
+    <div class="atelier-hd a">Bloc 3 — Vote : pays prioritaires Control+</div>
+    <div class="atelier-body">
+      <p class="atelier-intro">Chaque membre vote pour le pays sur lequel concentrer l'effort en priorité.</p>
+      <div class="irow">
+        <input type="text" id="voter-nom" placeholder="Votre nom">
+        <select id="vote-pays">
+          <option value="">— Choisir un pays —</option>
+          <option>France</option><option>Allemagne</option><option>Espagne</option>
+          <option>Italie</option><option>Royaume-Uni</option><option>Pologne</option>
+          <option>Moyen-Orient</option><option>Autre</option>
+        </select>
+        <button class="add-btn a" onclick="addVote()">Voter</button>
+      </div>
+      <div class="vwrap" id="vote-results"><div class="nodata-sm">Aucun vote pour l'instant.</div></div>
+    </div>
+  </div>
+</div>
+
+</main>
+<footer>SAINT-GOBAIN PAM · Document interne confidentiel · Mise au vert CODIR · Mai 2025</footer>
+
+<script>
+function show(id,btn){document.querySelectorAll('.section').forEach(s=>s.classList.remove('active'));document.querySelectorAll('.nav-btn').forEach(b=>b.classList.remove('active'));document.getElementById(id).classList.add('active');if(btn)btn.classList.add('active');}
+function getData(k){try{return JSON.parse(localStorage.getItem(k))||[];}catch{return[];}}
+function setData(k,v){try{localStorage.setItem(k,JSON.stringify(v));}catch{}}
+
+let prepResponses=getData('pam_prep');
+async function submitPrep(e){
+  e.preventDefault();
+  const nom=document.getElementById('prep-nom').value.trim();
+  if(!nom)return;
+  const entry={nom,avance:document.getElementById('prep-avance').value.trim(),freine:document.getElementById('prep-freine').value.trim(),besoin:document.getElementById('prep-besoin').value.trim(),fonctionne:document.getElementById('prep-fonctionne').value.trim(),ameliorer:document.getElementById('prep-ameliorer').value.trim(),ts:new Date().toLocaleString('fr-FR')};
+  prepResponses.push(entry);
+  setData('pam_prep',prepResponses);
+  // Send via Formspree
+  const btn=document.querySelector('.submit-btn');
+  btn.textContent='Envoi en cours…';btn.disabled=true;
+  try{
+    await fetch('https://formspree.io/f/xvzlrdpa',{method:'POST',headers:{'Content-Type':'application/json','Accept':'application/json'},body:JSON.stringify({
+      _subject:'[Mise au vert PAM] Préparation de '+nom,
+      Nom:entry.nom,
+      'Lead & Grow - Ce qui avance':entry.avance||'—',
+      'Lead & Grow - Ce qui freine':entry.freine||'—',
+      'Lead & Grow - Besoin':entry.besoin||'—',
+      'CODIR - Ce qui fonctionne':entry.fonctionne||'—',
+      'CODIR - A améliorer':entry.ameliorer||'—',
+    })});
+  }catch(err){console.warn('Formspree error',err);}
+  document.getElementById('prepForm').style.display='none';
+  document.getElementById('prep-success').style.display='block';
+  renderPrepTable();
+}
+function renderPrepTable(){const wrap=document.getElementById('prep-responses-wrap');if(!prepResponses.length){wrap.style.display='none';return;}wrap.style.display='block';document.getElementById('prep-tbody').innerHTML=prepResponses.map(r=>`<tr><td><strong>${r.nom}</strong></td><td>${r.avance||'—'}</td><td>${r.freine||'—'}</td><td>${r.besoin||'—'}</td><td>${r.fonctionne||'—'}</td><td>${r.ameliorer||'—'}</td></tr>`).join('');}
+renderPrepTable();
+
+let postits=getData('pam_postits');
+function addPostit(){const nom=document.getElementById('postit-nom').value.trim();const text=document.getElementById('postit-text').value.trim();const type=document.getElementById('postit-type').value;if(!nom||!text){alert('Merci d\'indiquer votre nom et votre contribution.');return;}postits.push({nom,text,type});setData('pam_postits',postits);document.getElementById('postit-text').value='';renderPostits();}
+function renderPostits(){const f=(arr,cls)=>arr.length?arr.map(p=>`<div class="pi ${cls}"><span>${p.text}</span><span class="pi-author">${p.nom}</span></div>`).join(''):`<div style="font-size:12px;color:var(--muted);padding:8px 0">Aucune contribution.</div>`;document.getElementById('postits-bien').innerHTML=f(postits.filter(p=>p.type==='bien'),'bien');document.getElementById('postits-amelio').innerHTML=f(postits.filter(p=>p.type==='amelio'),'amelio');}
+renderPostits();
+
+let votes=getData('pam_votes');
+function addVote(){const nom=document.getElementById('voter-nom').value.trim();const pays=document.getElementById('vote-pays').value;if(!nom||!pays){alert('Merci d\'indiquer votre nom et de choisir un pays.');return;}votes=votes.filter(v=>v.nom!==nom);votes.push({nom,pays});setData('pam_votes',votes);document.getElementById('voter-nom').value='';document.getElementById('vote-pays').value='';renderVotes();}
+function renderVotes(){const c=document.getElementById('vote-results');if(!votes.length){c.innerHTML='<div class="nodata-sm">Aucun vote pour l\'instant.</div>';return;}const counts={};votes.forEach(v=>counts[v.pays]=(counts[v.pays]||0)+1);const sorted=Object.entries(counts).sort((a,b)=>b[1]-a[1]);const max=sorted[0][1];c.innerHTML=sorted.map(([pays,n])=>`<div class="vr"><div class="vr-label"><span>${pays}</span><span>${n} vote${n>1?'s':''}</span></div><div class="vbar-bg"><div class="vbar" style="width:${(n/max)*100}%"></div></div></div>`).join('')+`<div class="vtotal">${votes.length} vote${votes.length>1?'s':''} — ${votes.map(v=>`${v.nom} → ${v.pays}`).join(', ')}</div>`;}
+renderVotes();
+</script>
+</body>
+</html>

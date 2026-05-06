@@ -1,0 +1,393 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Admin — Réponses Mise au vert CODIR PAM</title>
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800&family=Open+Sans:wght@300;400;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --navy: #0D2B4E; --navy-mid: #1A3F6F;
+    --blue: #2E9BD6; --blue-pale: #EBF6FC; --blue-light: #D6EEF9;
+    --purple: #3D3A8C; --purple-lt: #ECEAFB;
+    --amber: #C47A0A; --amber-lt: #FEF3DC;
+    --green: #0F6E56; --green-lt: #D8F2EB;
+    --grey: #F4F6F9; --border: #DDE3EB;
+    --text: #1A2B3C; --muted: #6B7A8D; --white: #fff;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: 'Open Sans', sans-serif; background: var(--grey); color: var(--text); min-height: 100vh; }
+
+  /* LOGIN */
+  .login-overlay {
+    position: fixed; inset: 0;
+    background: var(--navy);
+    display: flex; align-items: center; justify-content: center;
+    z-index: 1000;
+    flex-direction: column;
+    gap: 0;
+  }
+  .login-box {
+    background: white;
+    border-radius: 14px;
+    padding: 40px 48px;
+    width: 100%;
+    max-width: 380px;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+  }
+  .login-logo { text-align: center; margin-bottom: 28px; }
+  .login-title { font-family: 'Montserrat', sans-serif; font-size: 15px; font-weight: 800; text-transform: uppercase; letter-spacing: .1em; color: var(--navy); text-align: center; margin-bottom: 6px; }
+  .login-sub { font-size: 12px; color: var(--muted); text-align: center; margin-bottom: 28px; }
+  .login-box label { font-size: 11px; font-weight: 700; color: var(--muted); text-transform: uppercase; letter-spacing: .08em; display: block; margin-bottom: 6px; }
+  .login-box input { width: 100%; padding: 12px 16px; border: 1.5px solid var(--border); border-radius: 8px; font-family: 'Open Sans', sans-serif; font-size: 14px; outline: none; transition: border-color .2s; }
+  .login-box input:focus { border-color: var(--blue); }
+  .login-btn { width: 100%; margin-top: 16px; background: var(--navy); color: white; font-family: 'Montserrat', sans-serif; font-size: 12px; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; padding: 13px; border: none; border-radius: 8px; cursor: pointer; transition: background .2s; }
+  .login-btn:hover { background: var(--navy-mid); }
+  .login-error { color: #c0392b; font-size: 12px; text-align: center; margin-top: 10px; display: none; }
+
+  /* HEADER */
+  header { background: var(--navy); padding: 0; }
+  .header-inner { max-width: 1100px; margin: 0 auto; padding: 20px 28px; display: flex; align-items: center; justify-content: space-between; gap: 20px; }
+  .header-left { display: flex; align-items: center; gap: 20px; }
+  .header-title { font-family: 'Montserrat', sans-serif; font-size: 13px; font-weight: 700; color: white; text-transform: uppercase; letter-spacing: .1em; }
+  .header-tag { font-size: 11px; color: var(--blue); font-family: 'Montserrat', sans-serif; font-weight: 600; }
+  .header-right { display: flex; align-items: center; gap: 12px; }
+  .btn-export { background: var(--blue); color: white; border: none; border-radius: 8px; padding: 9px 18px; font-family: 'Montserrat', sans-serif; font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: .06em; cursor: pointer; transition: background .2s; }
+  .btn-export:hover { background: #2480b0; }
+  .btn-clear { background: rgba(255,255,255,.1); color: rgba(255,255,255,.6); border: 1px solid rgba(255,255,255,.15); border-radius: 8px; padding: 9px 18px; font-family: 'Montserrat', sans-serif; font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: .06em; cursor: pointer; transition: all .2s; }
+  .btn-clear:hover { background: rgba(255,255,255,.18); color: white; }
+
+  /* MAIN */
+  main { max-width: 1100px; margin: 0 auto; padding: 32px 28px 80px; }
+
+  /* STATS */
+  .stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 12px; margin-bottom: 28px; }
+  .stat-card { background: white; border: 1px solid var(--border); border-radius: 10px; padding: 18px 20px; }
+  .stat-val { font-family: 'Montserrat', sans-serif; font-size: 32px; font-weight: 800; color: var(--navy); line-height: 1; }
+  .stat-val span { font-size: 18px; color: var(--blue); }
+  .stat-label { font-size: 12px; color: var(--muted); margin-top: 4px; }
+  .stat-bar { height: 4px; background: var(--grey); border-radius: 2px; margin-top: 10px; overflow: hidden; }
+  .stat-bar-fill { height: 4px; background: var(--blue); border-radius: 2px; transition: width .4s; }
+
+  /* TABS */
+  .tabs { display: flex; gap: 4px; margin-bottom: 20px; background: white; border: 1px solid var(--border); border-radius: 10px; padding: 4px; width: fit-content; }
+  .tab { padding: 8px 18px; font-family: 'Montserrat', sans-serif; font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: .08em; color: var(--muted); border: none; background: none; border-radius: 7px; cursor: pointer; transition: all .2s; }
+  .tab.active { background: var(--navy); color: white; }
+
+  /* SECTION TITLE */
+  .sec-title { font-family: 'Montserrat', sans-serif; font-size: 12px; font-weight: 800; text-transform: uppercase; letter-spacing: .12em; color: var(--navy); margin-bottom: 16px; padding-bottom: 8px; border-bottom: 2px solid var(--blue); display: flex; align-items: center; justify-content: space-between; }
+  .count-badge { background: var(--blue); color: white; border-radius: 20px; padding: 2px 10px; font-size: 11px; }
+
+  /* RESPONSE CARDS */
+  .response-card { background: white; border: 1px solid var(--border); border-radius: 10px; margin-bottom: 12px; overflow: hidden; }
+  .rc-header { padding: 12px 18px; display: flex; align-items: center; justify-content: space-between; background: var(--grey); border-bottom: 1px solid var(--border); }
+  .rc-name { font-family: 'Montserrat', sans-serif; font-weight: 700; font-size: 14px; color: var(--navy); }
+  .rc-ts { font-size: 11px; color: var(--muted); }
+  .rc-body { padding: 14px 18px; display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+  .rc-field { }
+  .rc-field-label { font-family: 'Montserrat', sans-serif; font-size: 9px; font-weight: 800; text-transform: uppercase; letter-spacing: .12em; color: var(--muted); margin-bottom: 4px; }
+  .rc-field-val { font-size: 13px; color: var(--text); line-height: 1.55; }
+  .rc-field-val.empty { color: var(--muted); font-style: italic; }
+  .rc-divider { grid-column: 1/-1; border: none; border-top: 1px solid var(--border); margin: 4px 0; }
+  .section-badge { display: inline-block; font-family: 'Montserrat', sans-serif; font-size: 9px; font-weight: 700; text-transform: uppercase; letter-spacing: .08em; padding: 2px 8px; border-radius: 4px; margin-bottom: 8px; grid-column: 1/-1; }
+  .section-badge.b1 { background: var(--blue-light); color: var(--navy); }
+  .section-badge.b2 { background: var(--purple-lt); color: var(--purple); }
+
+  /* POSTITS ADMIN */
+  .postit-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+  .postit-col-title { font-family: 'Montserrat', sans-serif; font-size: 10px; font-weight: 800; text-transform: uppercase; letter-spacing: .1em; color: var(--muted); margin-bottom: 10px; }
+  .pi { border-radius: 8px; padding: 12px 14px; margin-bottom: 8px; display: flex; justify-content: space-between; align-items: flex-start; gap: 10px; font-size: 13px; }
+  .pi.bien { background: #EEFAF4; border: 1px solid #9DD3BC; }
+  .pi.amelio { background: #FFF8EE; border: 1px solid #F0C97A; }
+  .pi-author { font-size: 11px; color: var(--muted); white-space: nowrap; font-weight: 600; font-family: 'Montserrat', sans-serif; }
+
+  /* VOTE ADMIN */
+  .vote-admin-wrap { background: white; border: 1px solid var(--border); border-radius: 10px; padding: 20px; }
+  .vr { margin-bottom: 14px; }
+  .vr-label { font-size: 13px; color: var(--text); margin-bottom: 5px; display: flex; justify-content: space-between; font-weight: 600; }
+  .vbar-bg { background: var(--grey); border-radius: 4px; height: 10px; overflow: hidden; }
+  .vbar { height: 10px; border-radius: 4px; background: var(--blue); transition: width .4s; }
+  .voters-list { font-size: 11px; color: var(--muted); margin-top: 3px; }
+  .vtotal { font-size: 12px; color: var(--muted); margin-top: 16px; padding-top: 12px; border-top: 1px solid var(--border); }
+
+  /* EMPTY */
+  .empty-state { text-align: center; padding: 60px 20px; color: var(--muted); }
+  .empty-state .icon { font-size: 40px; margin-bottom: 12px; }
+  .empty-state p { font-size: 14px; }
+
+  .tab-content { display: none; }
+  .tab-content.active { display: block; }
+
+  @media(max-width:700px) {
+    .rc-body { grid-template-columns: 1fr; }
+    .postit-grid { grid-template-columns: 1fr; }
+    .header-inner { flex-direction: column; align-items: flex-start; }
+    .stats { grid-template-columns: 1fr 1fr; }
+  }
+</style>
+</head>
+<body>
+
+<!-- LOGIN -->
+<div class="login-overlay" id="loginOverlay">
+  <div class="login-box">
+    <div class="login-logo">
+      <div style="font-family:'Montserrat',sans-serif;font-size:11px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--navy);margin-bottom:4px;">Mise au vert CODIR PAM</div>
+    </div>
+    <div class="login-title">Espace Administrateur</div>
+    <div class="login-sub">Accès réservé à l'organisateur</div>
+    <label>Mot de passe</label>
+    <input type="password" id="pwd-input" placeholder="••••••••" onkeydown="if(event.key==='Enter')checkPwd()">
+    <button class="login-btn" onclick="checkPwd()">Accéder</button>
+    <div class="login-error" id="login-error">Mot de passe incorrect.</div>
+  </div>
+</div>
+
+<!-- HEADER -->
+<header>
+  <div class="header-inner">
+    <div class="header-left">
+      <div>
+        <div class="header-tag">Espace administrateur</div>
+        <div class="header-title">Mise au vert CODIR PAM · Mai 2025</div>
+      </div>
+    </div>
+    <div class="header-right">
+      <button class="btn-export" onclick="exportCSV()">⬇ Exporter CSV</button>
+      <button class="btn-clear" onclick="clearAll()">Effacer tout</button>
+    </div>
+  </div>
+</header>
+
+<main>
+
+  <!-- STATS -->
+  <div class="stats" id="stats-row">
+    <div class="stat-card">
+      <div class="stat-val" id="stat-rep">0</div>
+      <div class="stat-label">Réponses formulaire J-2</div>
+      <div class="stat-bar"><div class="stat-bar-fill" id="stat-rep-bar" style="width:0%"></div></div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-val" id="stat-postits">0</div>
+      <div class="stat-label">Post-its désilotage</div>
+      <div class="stat-bar"><div class="stat-bar-fill" id="stat-pi-bar" style="width:0%"></div></div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-val" id="stat-votes">0</div>
+      <div class="stat-label">Votes Control+</div>
+      <div class="stat-bar"><div class="stat-bar-fill" id="stat-v-bar" style="width:0%"></div></div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-val"><span id="stat-pct">0</span><span>%</span></div>
+      <div class="stat-label">Taux de réponse CODIR (sur 10)</div>
+      <div class="stat-bar"><div class="stat-bar-fill" id="stat-pct-bar" style="width:0%"></div></div>
+    </div>
+  </div>
+
+  <!-- TABS -->
+  <div class="tabs">
+    <button class="tab active" onclick="switchTab('prep',this)">Préparations J-2</button>
+    <button class="tab" onclick="switchTab('postits',this)">Post-its séance</button>
+    <button class="tab" onclick="switchTab('votes',this)">Votes Control+</button>
+  </div>
+
+  <!-- TAB: PRÉPARATIONS -->
+  <div class="tab-content active" id="tab-prep">
+    <div class="sec-title">
+      <span>Réponses au formulaire de préparation</span>
+      <span class="count-badge" id="prep-count">0</span>
+    </div>
+    <div id="prep-list"></div>
+  </div>
+
+  <!-- TAB: POST-ITS -->
+  <div class="tab-content" id="tab-postits">
+    <div class="sec-title">
+      <span>Post-its — Fonctionnement CODIR</span>
+      <span class="count-badge" id="pi-count">0</span>
+    </div>
+    <div class="postit-grid">
+      <div>
+        <div class="postit-col-title">✅ Ce qui fonctionne</div>
+        <div id="admin-postits-bien"></div>
+      </div>
+      <div>
+        <div class="postit-col-title">🔧 À améliorer</div>
+        <div id="admin-postits-amelio"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- TAB: VOTES -->
+  <div class="tab-content" id="tab-votes">
+    <div class="sec-title">
+      <span>Votes — Pays prioritaires Control+</span>
+      <span class="count-badge" id="v-count">0</span>
+    </div>
+    <div class="vote-admin-wrap" id="admin-votes"></div>
+  </div>
+
+</main>
+
+<script>
+// ── AUTH ──────────────────────────────────────────────────────────────────────
+const PWD = 'orion2025';
+function checkPwd() {
+  const v = document.getElementById('pwd-input').value;
+  if (v === PWD) {
+    document.getElementById('loginOverlay').style.display = 'none';
+    renderAll();
+  } else {
+    document.getElementById('login-error').style.display = 'block';
+    document.getElementById('pwd-input').value = '';
+    document.getElementById('pwd-input').focus();
+  }
+}
+
+// ── DATA ──────────────────────────────────────────────────────────────────────
+function getData(k) { try { return JSON.parse(localStorage.getItem(k)) || []; } catch { return []; } }
+function setData(k, v) { try { localStorage.setItem(k, JSON.stringify(v)); } catch {} }
+
+// ── TABS ──────────────────────────────────────────────────────────────────────
+function switchTab(id, btn) {
+  document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
+  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+  document.getElementById('tab-' + id).classList.add('active');
+  btn.classList.add('active');
+}
+
+// ── RENDER ALL ────────────────────────────────────────────────────────────────
+function renderAll() {
+  renderPrep();
+  renderPostits();
+  renderVotes();
+  renderStats();
+}
+
+// ── PRÉPARATIONS ──────────────────────────────────────────────────────────────
+function renderPrep() {
+  const data = getData('pam_prep');
+  document.getElementById('prep-count').textContent = data.length;
+  const list = document.getElementById('prep-list');
+  if (!data.length) {
+    list.innerHTML = `<div class="empty-state"><div class="icon">📭</div><p>Aucune réponse pour l'instant.<br>Les réponses apparaîtront ici après soumission du formulaire.</p></div>`;
+    return;
+  }
+  list.innerHTML = data.map((r, i) => `
+    <div class="response-card">
+      <div class="rc-header">
+        <span class="rc-name">👤 ${r.nom}</span>
+        <span class="rc-ts">${r.ts || ''}</span>
+      </div>
+      <div class="rc-body">
+        <div class="section-badge b1">Lead & Grow — Bloc 1a</div>
+        <div class="rc-field">
+          <div class="rc-field-label">Ce qui avance</div>
+          <div class="rc-field-val ${!r.avance?'empty':''}">${r.avance || 'Non renseigné'}</div>
+        </div>
+        <div class="rc-field">
+          <div class="rc-field-label">Ce qui freine</div>
+          <div class="rc-field-val ${!r.freine?'empty':''}">${r.freine || 'Non renseigné'}</div>
+        </div>
+        <div class="rc-field" style="grid-column:1/-1">
+          <div class="rc-field-label">Besoin pour accélérer</div>
+          <div class="rc-field-val ${!r.besoin?'empty':''}">${r.besoin || 'Non renseigné'}</div>
+        </div>
+        <hr class="rc-divider">
+        <div class="section-badge b2">Fonctionnement CODIR — Bloc 1b</div>
+        <div class="rc-field">
+          <div class="rc-field-label">Ce qui fonctionne bien</div>
+          <div class="rc-field-val ${!r.fonctionne?'empty':''}">${r.fonctionne || 'Non renseigné'}</div>
+        </div>
+        <div class="rc-field">
+          <div class="rc-field-label">À améliorer</div>
+          <div class="rc-field-val ${!r.ameliorer?'empty':''}">${r.ameliorer || 'Non renseigné'}</div>
+        </div>
+      </div>
+    </div>`).join('');
+}
+
+// ── POST-ITS ──────────────────────────────────────────────────────────────────
+function renderPostits() {
+  const data = getData('pam_postits');
+  document.getElementById('pi-count').textContent = data.length;
+  const bien = data.filter(p => p.type === 'bien');
+  const amelio = data.filter(p => p.type === 'amelio');
+  const f = (arr, cls) => arr.length
+    ? arr.map(p => `<div class="pi ${cls}"><span>${p.text}</span><span class="pi-author">${p.nom}</span></div>`).join('')
+    : `<div style="font-size:13px;color:var(--muted);padding:12px 0;">Aucune contribution.</div>`;
+  document.getElementById('admin-postits-bien').innerHTML = f(bien, 'bien');
+  document.getElementById('admin-postits-amelio').innerHTML = f(amelio, 'amelio');
+}
+
+// ── VOTES ─────────────────────────────────────────────────────────────────────
+function renderVotes() {
+  const data = getData('pam_votes');
+  document.getElementById('v-count').textContent = data.length;
+  const el = document.getElementById('admin-votes');
+  if (!data.length) {
+    el.innerHTML = `<div class="empty-state"><div class="icon">🗳</div><p>Aucun vote pour l'instant.</p></div>`;
+    return;
+  }
+  const counts = {};
+  const voters = {};
+  data.forEach(v => {
+    counts[v.pays] = (counts[v.pays] || 0) + 1;
+    voters[v.pays] = voters[v.pays] || [];
+    voters[v.pays].push(v.nom);
+  });
+  const sorted = Object.entries(counts).sort((a, b) => b[1] - a[1]);
+  const max = sorted[0][1];
+  el.innerHTML = sorted.map(([pays, n]) => `
+    <div class="vr">
+      <div class="vr-label"><span>${pays}</span><span>${n} vote${n > 1 ? 's' : ''}</span></div>
+      <div class="vbar-bg"><div class="vbar" style="width:${(n/max)*100}%"></div></div>
+      <div class="voters-list">${voters[pays].join(', ')}</div>
+    </div>`).join('') +
+    `<div class="vtotal">${data.length} vote${data.length > 1 ? 's' : ''} au total · ${data.map(v => `${v.nom} → ${v.pays}`).join(' · ')}</div>`;
+}
+
+// ── STATS ─────────────────────────────────────────────────────────────────────
+function renderStats() {
+  const prep = getData('pam_prep').length;
+  const pi = getData('pam_postits').length;
+  const v = getData('pam_votes').length;
+  const total = 10; // CODIR size
+  const pct = Math.round((prep / total) * 100);
+  document.getElementById('stat-rep').textContent = prep;
+  document.getElementById('stat-postits').textContent = pi;
+  document.getElementById('stat-votes').textContent = v;
+  document.getElementById('stat-pct').textContent = pct;
+  document.getElementById('stat-rep-bar').style.width = Math.min((prep/total)*100, 100) + '%';
+  document.getElementById('stat-pi-bar').style.width = Math.min((pi/20)*100, 100) + '%';
+  document.getElementById('stat-v-bar').style.width = Math.min((v/total)*100, 100) + '%';
+  document.getElementById('stat-pct-bar').style.width = pct + '%';
+}
+
+// ── EXPORT CSV ────────────────────────────────────────────────────────────────
+function exportCSV() {
+  const data = getData('pam_prep');
+  if (!data.length) { alert('Aucune réponse à exporter.'); return; }
+  const headers = ['Nom', 'Ce qui avance (LG)', 'Ce qui freine (LG)', 'Besoin (LG)', 'Ce qui fonctionne (CODIR)', 'A améliorer (CODIR)', 'Date'];
+  const rows = data.map(r => [r.nom, r.avance, r.freine, r.besoin, r.fonctionne, r.ameliorer, r.ts || ''].map(v => `"${(v||'').replace(/"/g,'""')}"`).join(','));
+  const csv = [headers.join(','), ...rows].join('\n');
+  const blob = new Blob(['\ufeff' + csv], { type: 'text/csv;charset=utf-8;' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url; a.download = 'preparations_mise_au_vert_PAM.csv';
+  a.click(); URL.revokeObjectURL(url);
+}
+
+// ── CLEAR ─────────────────────────────────────────────────────────────────────
+function clearAll() {
+  if (!confirm('Effacer toutes les données ? Cette action est irréversible.')) return;
+  ['pam_prep', 'pam_postits', 'pam_votes'].forEach(k => localStorage.removeItem(k));
+  renderAll();
+}
+
+// Auto-refresh toutes les 30s
+setInterval(() => { if (document.getElementById('loginOverlay').style.display === 'none') renderAll(); }, 30000);
+</script>
+</body>
+</html>

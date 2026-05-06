@@ -223,30 +223,6 @@
 
   @media(max-width:600px){ .pcols{grid-template-columns:1fr;} .slot-time{min-width:70px;font-size:10px;} .header-inner{padding:28px 16px 60px;} }
 </style>
-  <script>
-function checkSplash() {
-  var v = document.getElementById('splash-pwd').value;
-  if (v === 'Miseauvert2026') {
-    document.getElementById('splash').style.display = 'none';
-    document.body.style.overflow = 'auto';
-  } else {
-    document.getElementById('splash-error').style.display = 'block';
-    document.getElementById('splash-pwd').value = '';
-    document.getElementById('splash-pwd').focus();
-  }
-}
-function togglePwd() {
-  var input = document.getElementById('splash-pwd');
-  var btn = document.getElementById('eye-btn');
-  if (input.type === 'password') {
-    input.type = 'text';
-    btn.textContent = '🙈';
-  } else {
-    input.type = 'password';
-    btn.textContent = '👁';
-  }
-}
-</script>
 </head>
 <body>
 
@@ -289,7 +265,7 @@ function togglePwd() {
     <button class="nav-btn" onclick="show('preparations',this)">Préparations</button>
     <button class="nav-btn" onclick="show('infos',this)">Infos pratiques</button>
     <button class="nav-btn" onclick="show('formulaire',this)">Formulaire J-2</button>
-    <button class="nav-btn" onclick="show('ateliers',this)">Outils séance</button>
+    <button class="nav-btn" style="opacity:0.4;cursor:default;" disabled>Outils séance — bientôt</button>
   </div>
 </nav>
 
@@ -473,15 +449,7 @@ function togglePwd() {
     <button type="submit" class="submit-btn">Envoyer ma préparation</button>
   </form>
   <div class="success-msg" id="prep-success">✅ Préparation bien enregistrée. Merci !</div>
-  <div class="responses-wrap" id="prep-responses-wrap" style="display:none">
-    <h3>Réponses reçues</h3>
-    <div style="overflow-x:auto">
-      <table class="rt">
-        <thead><tr><th>Nom</th><th>Ce qui avance</th><th>Ce qui freine</th><th>Besoin</th><th>Fonctionne</th><th>À améliorer</th></tr></thead>
-        <tbody id="prep-tbody"><tr><td colspan="6" class="nodata">Aucune réponse pour l'instant.</td></tr></tbody>
-      </table>
-    </div>
-  </div>
+
 </div>
 
 <!-- OUTILS SÉANCE -->
@@ -556,10 +524,8 @@ async function submitPrep(e){
   }catch(err){console.warn('Formspree error',err);}
   document.getElementById('prepForm').style.display='none';
   document.getElementById('prep-success').style.display='block';
-  renderPrepTable();
-}
-function renderPrepTable(){const wrap=document.getElementById('prep-responses-wrap');if(!prepResponses.length){wrap.style.display='none';return;}wrap.style.display='block';document.getElementById('prep-tbody').innerHTML=prepResponses.map(r=>`<tr><td><strong>${r.nom}</strong></td><td>${r.avance||'—'}</td><td>${r.freine||'—'}</td><td>${r.besoin||'—'}</td><td>${r.fonctionne||'—'}</td><td>${r.ameliorer||'—'}</td></tr>`).join('');}
-renderPrepTable();
+  }
+function renderPrepTable(){}
 
 let postits=getData('pam_postits');
 function addPostit(){const nom=document.getElementById('postit-nom').value.trim();const text=document.getElementById('postit-text').value.trim();const type=document.getElementById('postit-type').value;if(!nom||!text){alert('Merci d\'indiquer votre nom et votre contribution.');return;}postits.push({nom,text,type});setData('pam_postits',postits);document.getElementById('postit-text').value='';renderPostits();}
